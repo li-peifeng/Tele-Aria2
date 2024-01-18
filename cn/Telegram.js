@@ -302,8 +302,8 @@ var Telegram = /** @class */ (function () {
         this.bot.start(function (ctx) {
             // Welcome message
             ctx.replyWithMarkdown('亲爱的，你回来啦😘', telegraf_1.Markup.inlineKeyboard([
-                telegraf_1.Markup.urlButton('️🔷 GitHub', 'https://github.com/li-peifeng/tele-aria2'),
-                telegraf_1.Markup.urlButton('🔶 我的主页 ', 'https://peifeng.li'),
+                telegraf_1.Markup.urlButton('️🔷 联系', 'https://t.me/leolitaly'),
+                telegraf_1.Markup.urlButton('🔶 主页 ', 'https://peifeng.li'),
             ], { columns: 2 }).extra());
             // Keyboard
             ctx.replyWithMarkdown('请选择一个选项开始吧', telegraf_1.Markup.keyboard([
