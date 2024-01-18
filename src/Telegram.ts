@@ -238,7 +238,7 @@ export default class Telegram {
 
         // Build callback buttons
         if (fullList.length === 0) {
-          return ctx.reply('没有可删除的任);
+          return ctx.reply('没有可删除的任务');
         }
 
         // Build callback buttons.
