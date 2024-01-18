@@ -80,7 +80,7 @@ export default class Telegram {
         return next();
       }
 
-      return ctx.reply('You\'re not allowed to use this bot 😢.');
+      return ctx.reply('您没有权限使用此机器人哦 😢.');
     });
   }
 
@@ -109,27 +109,27 @@ export default class Telegram {
       this.allowedUser.forEach((userId) => this.bot.telegram.sendMessage(userId, message));
     });
 
-    this.replyOnAria2ServerEvent('downloadStart', 'Download started!');
-    this.replyOnAria2ServerEvent('downloadComplete', 'Download completed!');
-    this.replyOnAria2ServerEvent('downloadPause', 'Download paused!');
+    this.replyOnAria2ServerEvent('downloadStart', '开始下载');
+    this.replyOnAria2ServerEvent('downloadComplete', '下载完成');
+    this.replyOnAria2ServerEvent('downloadPause', '暂停下载');
     // Try to download some non-existing URL to triger this error. e.g. https://1992342346.xyz/qwq122312
     this.replyOnAria2ServerEvent('downloadError',
-      'A download error occured. ✅ Finished/Stopped menu for more details',
+      '下载错误, 请选择 ✅下载完成菜单查看详情',
     );
-    this.replyOnAria2ServerEvent('downloadStop', 'Download stopped!'); // Calling aria2.remove can triger this event.
+    this.replyOnAria2ServerEvent('downloadStop', '停止下载'); // Calling aria2.remove can triger this event.
   }
 
   private downloading(ctx: Context): void {
     this.aria2Server.send('tellActive', (data) => {
       if (Array.isArray(data)) {
         const parsed = data.map((item: TaskItem) => [
-          `Name: ${getFilename(item)}`,
-          `Progress: ${progress(Number(item.totalLength), Number(item.completedLength))}`,
-          `Size: ${byte2Readable(Number(item.totalLength))}`,
-          `Speed: ${byte2Readable(Number(item.downloadSpeed), '/s')}`,
+          `任务名称: ${getFilename(item)}`,
+          `下载进度: ${progress(Number(item.totalLength), Number(item.completedLength))}`,
+          `文件大小: ${byte2Readable(Number(item.totalLength))}`,
+          `下载速度: ${byte2Readable(Number(item.downloadSpeed), '/s')}`,
         ].join('\n'));
 
-        const message = parsed.join('\n\n') || 'No active download!';
+        const message = parsed.join('\n\n') || '没有进行中的下载任务';
 
         ctx.reply(message);
       }
@@ -140,12 +140,12 @@ export default class Telegram {
     this.aria2Server.send('tellWaiting', [-1, this.maxIndex], (data) => {
       if (Array.isArray(data)) {
         const parsed = data.map((item: TaskItem) => [
-          `Name: ${getFilename(item)}`,
-          `Progress: ${progress(Number(item.totalLength), Number(item.completedLength))}`,
-          `Size: ${byte2Readable(Number(item.totalLength))}`,
+          `任务名称: ${getFilename(item)}`,
+          `下载进度: ${progress(Number(item.totalLength), Number(item.completedLength))}`,
+          `文件大小: ${byte2Readable(Number(item.totalLength))}`,
         ].join('\n'));
 
-        const message = parsed.join('\n\n') || 'No waiting download!';
+        const message = parsed.join('\n\n') || '没有等待中的下载任务';
 
         ctx.reply(message);
       }
@@ -157,9 +157,9 @@ export default class Telegram {
       if (Array.isArray(data)) {
         const parsed = data.map((item: TaskItem) => {
           const messageEntities = [
-            `Name: ${getFilename(item)}`,
-            `Size: ${byte2Readable(Number(item.totalLength))}`,
-            `Progress: ${progress(Number(item.totalLength), Number(item.completedLength))}`,
+            `任务名称: ${getFilename(item)}`,
+            `文件大小: ${byte2Readable(Number(item.totalLength))}`,
+            `下载进度: ${progress(Number(item.totalLength), Number(item.completedLength))}`,
           ];
 
           if (item.errorMessage) {
@@ -169,7 +169,7 @@ export default class Telegram {
           return messageEntities.join('\n');
         });
 
-        const message = parsed.join('\n\n') || 'No finished or stopped downloads!';
+        const message = parsed.join('\n\n') || '没有任何任务';
 
         ctx.reply(message);
       }
@@ -184,7 +184,7 @@ export default class Telegram {
       }
 
       if (data.length === 0) {
-        ctx.reply('No active task.');
+        ctx.reply('没有进行中的任务');
       } else {
         // Build callback buttons.
         const buttons = data.map((item: TaskItem) => Markup.callbackButton(
@@ -192,7 +192,7 @@ export default class Telegram {
         );
 
         ctx.replyWithMarkdown(
-          'Which one to pause?',
+          '要暂停哪一个?',
           Markup.inlineKeyboard(buttons, { columns: 1 }).extra(),
         );
       }
@@ -207,7 +207,7 @@ export default class Telegram {
       }
 
       if (data.length === 0) {
-        ctx.reply('No waiting task.');
+        ctx.reply('没有等待的任务');
       } else {
         // Build callback buttons.
         const buttons = data.map((item: TaskItem) => Markup.callbackButton(
@@ -215,7 +215,7 @@ export default class Telegram {
         );
 
         ctx.replyWithMarkdown(
-          'Which one to resume?',
+          '选择哪一个恢复?',
           Markup.inlineKeyboard(buttons, { columns: 1 }).extra(),
         );
       }
@@ -238,7 +238,7 @@ export default class Telegram {
 
         // Build callback buttons
         if (fullList.length === 0) {
-          return ctx.reply('No task available.');
+          return ctx.reply('没有可删除的任);
         }
 
         // Build callback buttons.
@@ -247,7 +247,7 @@ export default class Telegram {
         );
 
         return ctx.replyWithMarkdown(
-          'Which one to remove?',
+          '选择哪一个删除?',
           Markup.inlineKeyboard(buttons, { columns: 1 }).extra(),
         );
       });
@@ -263,7 +263,7 @@ export default class Telegram {
 
       if (gid) {
         if (method === 'pause') {
-          ctx.reply('Pausing the task... you will be notified once it\'s done.');
+          ctx.reply('暂停任务可能需要一些时间，一旦完成会通知您.');
         }
 
         this.aria2Server.send(method, [gid]);
@@ -281,22 +281,22 @@ export default class Telegram {
         this.logger.info(`Received message from Telegram: ${inComingText}`);
 
         switch (inComingText) {
-          case '⬇️ Downloading':
+          case '⬇️ 正在下载':
             this.downloading(ctx);
             break;
-          case '⌛️ Waiting':
+          case '⌛️ 等待下载':
             this.waiting(ctx);
             break;
-          case '✅ Finished/Stopped':
+          case '✅ 下载完成':
             this.stopped(ctx);
             break;
-          case '⏸️ Pause task':
+          case '⏸️ 暂停任务':
             this.pause(ctx);
             break;
-          case '▶️ Resume task':
+          case '▶️ 恢复任务':
             this.resume(ctx);
             break;
-          case '❌ Remove task':
+          case '❌ 删除任务':
             this.remove(ctx);
             break;
           default:
@@ -360,20 +360,21 @@ export default class Telegram {
     this.bot.start((ctx) => {
       // Welcome message
       ctx.replyWithMarkdown(
-        'Welcome to tele-aria2 bot! 👏',
+        '亲爱的，你回来啦😘',
         Markup.inlineKeyboard([
-          Markup.urlButton('️GitHub Page', 'https://github.com/HouCoder/tele-aria2'),
-          Markup.urlButton('Contact Author ', 'https://t.me/TonniHou'),
+          Markup.urlButton('️🔷 GitHub', 'https://github.com/li-peifeng/tele-aria2'),
+          Markup.urlButton('🔶 我的主页 ', 'https://peifeng.li'),
         ], { columns: 2 }).extra(),
       );
 
       // Keyboard
       ctx.replyWithMarkdown(
-        'Please select an option',
+        '请选择一个选项开始吧',
         Markup.keyboard([
-          '⬇️ Downloading', '⌛️ Waiting', '✅ Finished/Stopped',
-          '⏸️ Pause task', '▶️ Resume task', '❌ Remove task',
-        ], { columns: 3 }).extra(),
+          '⬇️ 正在下载', '⌛️ 等待下载', 
+          '✅ 下载完成', '⏸️ 暂停任务', 
+          '▶️ 恢复任务', '❌ 删除任务',
+        ], { columns: 2 }).extra(),
       );
     });
   }
